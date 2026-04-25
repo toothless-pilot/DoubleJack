@@ -1,1 +1,6 @@
 Team Members: Alex Kim, Suhas Beeravelli, Rushil Jaiswal
+
+1. Include thoughts about your project goals.
+
+2. for textgame, what are your simulation/game ideas?
+and so on... 
