@@ -1,6 +1,18 @@
 Team Members: Alex Kim, Suhas Beeravelli, Rushil Jaiswal
 
-1. Include thoughts about your project goals.
+1. Include thoughts about your project goals: 
+The goal of DoubleJack is to build a fully functional, multiplayer text-based blackjack game in Python that simulates a realistic casino environment. It supports an arbitrary number of players, each with their own starting budget, and runs across multiple rounds with persistent budget tracking, players can grind out wins or go bust over a session. The game uses a 6-deck shoe (standard for casino blackjack) that automatically resets when card count drops below 78 to prevent dealing from an empty shoe. Core mechanics include bet collection with input validation (you can't bet more than your budget), dealer logic that hits until 17, blackjack detection with 1.5x payout, and a final game summary comparing each player's ending budget to their starting stake. Stretch goals: implement the ace's dual value (1 or 11) — currently stubbed out with a comment — plus splitting, doubling down (the "Double" in DoubleJack), and insurance bets.
 
 2. for textgame, what are your simulation/game ideas?
-and so on... 
+and so on...
+
+DoubleJack is a multiplayer terminal-based blackjack simulation. Players are initialized with [[name, budget], ...] and take turns at a virtual table against a dealer. Each round flows through:
+
+Bet collection — every player with a non-zero budget places a bet, capped at their current funds
+Deal — dealer and players each get two cards from the shoe; dealer's hole card is hidden (shown as 🂠)
+Player turns — each player hits or stands until they bust, hit 21, or stand
+Dealer turn — dealer hits until reaching 17+
+Payout — blackjack pays 1.5x, regular wins pay 1x, ties push, losses subtract the bet
+Game summary — when players choose to stop, prints net winnings/losses per player vs. their starting budget
+
+Status codes (0 = bust, 1 = playing, 2 = stand, 3 = blackjack) drive the round's state machine. Future ideas: AI bot players using basic strategy, card-counting trackers, side bets, split/double-down support, and a session leaderboard.
