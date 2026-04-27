@@ -281,8 +281,6 @@ def startGame():
             playerData += [[name, budget,1]]
             time.sleep(2.5)
             print("\n"*10)
-        print(playerData)
-        return
     
     table = Doublejack(playerData)
     table.hostGame()
