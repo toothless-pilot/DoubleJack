@@ -147,7 +147,7 @@ class Doublejack():
             elif self.playerStatus[name] == 2:
                 if self.countHand(self.dealerHand) > self.target:
                     self.playerBets[name] *= 1 * self.payoutMultiplier
-                    print("Dealer busts!")
+                    print(f"Dealer busts! {name} wins {self.playerBets[name]}")
                 elif self.countHand(self.playerHands[name]) > self.countHand(self.dealerHand): #player wins
                     self.playerBets[name] *= 1 * self.payoutMultiplier
                     print(f"{name} wins with a count of {self.countHand(self.playerHands[name])}, winning {self.playerBets[name]}.")
@@ -177,7 +177,7 @@ class Doublejack():
     
     def gameSummary(self):
         for name in self.playerNames:
-            if self.playerBudget[name] - self.staticPlayerBudget[name] > 0:
+            if self.playerBudget[name] - self.staticPlayerBudget[name] >= 0:
                 print(f"{name} wins {self.playerBudget[name] - self.staticPlayerBudget[name]}, ending with {self.playerBudget[name]}")
             else:
                 print(f"{name} loses {self.staticPlayerBudget[name] - self.playerBudget[name]}, ending with {self.playerBudget[name]}")
@@ -191,6 +191,7 @@ class Doublejack():
                 self.payoutMultiplier = 2
     
     def dealerTurn(self):
+        print(f"Dealer shows {self.dealerHand}")
         while True:
             if self.countHand(self.dealerHand) >= self.target-4:
                 if self.countHand(self.dealerHand) > self.target:
@@ -213,6 +214,7 @@ class Doublejack():
             if self.countHand(self.playerHands[name]) > self.target:
                 print(f"{name} busts with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                 time.sleep(2.5)
+                print("\n"*10)
                 break
             elif self.countHand(self.playerHands[name]) <= self.target-10:
                 self.playerHands[name] += [self.randomCard()]
@@ -221,11 +223,13 @@ class Doublejack():
             elif self.countHand(self.playerHands[name]) >= self.target-4:
                 print(f"{name} stands with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                 time.sleep(2.5)
+                print("\n"*10)
                 break
             else:
                 if self.countHand(self.dealerHand[:-1]) <= self.target-15: #target-4-1-10
                     print(f"{name} stands with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                     time.sleep(2.5)
+                    print("\n"*10)
                     break
                 else:
                     self.playerHands[name] += [self.randomCard()]
@@ -253,12 +257,13 @@ class Doublejack():
         return self.gameSummary()
 
 def startGame():
+    print("\n"*10)
     gamemode = input("Select gamemode: Singleplayer vs Multiplayer [S/M]")
     playerData = []
-    if gamemode.upper == "S":
+    if gamemode.upper() == "S":
         #playerData
         name = input("Enter your name: ")
-        budget = input("Enter your budget: ")
+        budget = int(input("Enter your budget: "))
         playerData += [[name, budget,1]]
         
         #AIData
@@ -268,21 +273,27 @@ def startGame():
             poker_players.remove(AIName)
             playerData += [[AIName,budget,0]]
 
-    elif gamemode.upper == "M":
+    elif gamemode.upper() == "M":
         playerCount = int(input("Enter the number of players: "))
-        for i in range(playerCount):
-            name = input("Enter your name: ")
-            budget = input("Enter your budget: ")
+        for i in range(1,playerCount+1):
+            name = input(f"Enter player{i}'s name: ")
+            budget = int(input(f"Enter player {i}'s budget: "))
             playerData += [[name, budget,1]]
+            time.sleep(2.5)
+            print("\n"*10)
+        print(playerData)
+        return
     
     table = Doublejack(playerData)
     table.hostGame()
 
+startGame()
+
 #t1 = Doublejack([["alex",100,1],["rushil",150,1]])
 #t1.hostGame()
 
-t2= Doublejack([["alex",100,1],["AI",100,0]])
-t2.hostGame()
+#t2= Doublejack([["alex",100,1],["AI",100,0]])
+#t2.hostGame()
 
 '''
 #simulation to det dealer stand threshold for Doublejack
