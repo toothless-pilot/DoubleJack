@@ -1,0 +1,19 @@
+Our game, doublejack, is a variant of blackjack intended that further increases the reward
+compared to the standard game. The game is built around the dealer hitting the number 21, 
+which can be incredibly frustrating to players with a good hand. Our game compensates for
+this moment by allowing players to play doublejack, where players can place new bets and continue
+playing their previous hands but this time up to the number 42 (instead of the standard 21).
+Since the bust threshold is doubled, the payout is also doubled (although losses are still 1:1!).
+This gives the player an opportunity to make their money back after a tough beat to the dealer.
+
+Our game can be played either in multipler or singleplayer. In either case, the startGame()
+function will ask the player relevant questions like name and budget. In multiplayer you play
+against other people while in singleplayer you play against an AI that follows the basic strategy
+and adjust its bet according to the True Count. For our game, Dealer stands on 17. The player 
+can continue to play rounds until they run out of budget.
+
+Our team is basically finished with the project. The code that handles the actually gameplay 
+is completed. The things that we need to improve on for the final version is making the 
+terminal UI more visually appealing and handling incorrect inputs (probably through 
+try and except). But overall, the logic and math behind the game has been decided and implemented
+and the player, dealer, and AI are all functioning properly.
