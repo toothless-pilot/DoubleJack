@@ -1,0 +1,31 @@
+The text-based game project that we decided to work on is Doublejack, which is our twist on the standard game of blackjack. 
+Our game starts as a standard game of blackjack, but when the dealer hits a 21, all players have the option to continue 
+playing their hand until 42 (including players who have busted). In the game of Doublejack the dealer is dealt 2 additional 
+cards (on top of whichever combination of cards that lead to 21), one face up and one face down. If the player chooses to 
+participate in a round of Doublejack, they continue playing their previous hand but the target threshold is moved up from 
+21 to 42. In Doublejack all payouts are doubled compared to regular blackjack,  meaning that blackjack pays 1:3 and a standard 
+win pays 1:2.
+
+To play our game, you can run the python file which will automatically call the startGame() function. You have to choose
+between singleplayer and multiplayer, and input each respective player's name and budget before starting the game. You can play
+multiplayer, where multiple human players play each hand, or singleplayer, where you play against an AI (conviniently named after
+poker players ). Since you are competeting against the house, there is no direct player vs AI interaction in our game. However, in 
+singleplayer you can choose to compete against other AI players who follow a simplified version of the "basic blackjack strategy chart"
+and sizes its bet according to the true count. The strategy to playing doublejack is 1) placing a large bet in doublejack rounds since 
+expected value is doubled and 2) counting cards (e.g. using hi-low strategy) to keep track of face cards.
+
+While the execution and coding part of the project went relatively smoothly, increasing the target threshold for 42 caused many
+changes to the game. For example, we needed to figure out a new dealer stand threshold that would give as close to 50/50 odds
+between the player and dealer. To achieve this we ran a simulation across thresholds ranging from 33-41 to deduce which numerical
+threhsold had the closest dealer bust rate to a regular game of blackjack.
+
+The resulting product of our text-game based was a variant of blackjack that you can play on the terminal with friends of alone 
+against AI. Players are given a second chance to play a variant of blackjack with payout odds that highly favor the player. We have
+a terminal UI that allows players to type their choices (like hit vs stand) and player information (like budget, gains, and losses)
+are saved to different dictionaries in the constuctor inside the Doublejack class.
+
+The most difficult part by far was to create the card counting AI. We had to simplify the "basic blackjack strategy chart" because
+there were too many variations and exceptions (like doubling or distinguishing between soft vs hard hands). Our current version decides
+its next course of actions based on its current count of its card and doesn't take the dealer's face card into consideration. If I
+were to improve on this further, I would like to make a smarter card counting AI that takes into account dealer's face card and the
+current True count to not only size their bets, but also deteremine whether to hit of stand. 
