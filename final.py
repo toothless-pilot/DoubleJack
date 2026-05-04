@@ -1,3 +1,19 @@
+"""
+Doublejack — a Blackjack variant with a Doublejack bonus round.
+
+CS5 Final Project
+ - Alex Kim, Rushil Jaiswal, and Suhas Beeravelli
+
+Gameplay:
+ - Standard Blackjack rules, target 21, dealer hits below 17.
+ - Players bet poptarts (the in-game currency) instead of dollars.
+ - If the dealer's first round hits exactly 21, players are offered the
+   chance to play Doublejack, a follow-on round with target 42 where
+   payouts are doubled.
+ - In Doublejack, dealer hits below 38.
+ - AI uses hi-lo card counting to size bets.
+"""
+
 import random
 import time
 
@@ -74,22 +90,22 @@ class Doublejack():
         for name in self.playerNames:
             if self.playerType[name] == 1:
                 if self.playerBudget[name] > 0:
-                    print(f"{name}'s move. Your budget is {self.playerBudget[name]}.")
-                    bet = int(input(f"Place your bet: "))
+                    print(f"{name}'s move. Your budget is {self.playerBudget[name]} poptarts.")
+                    bet = int(input(f"Place your bet (in poptarts): "))
                     while bet > self.playerBudget[name]:
-                        bet = int(input(f"Your budget is {self.playerBudget[name]}. Try placing a smaller bet: "))
+                        bet = int(input(f"Your budget is {self.playerBudget[name]} poptarts. Try placing a smaller bet: "))
                     self.playerBets[name] = bet
                     time.sleep(1.5)
-                    print("\n"*10)
+                    print("\n"*20)
             else:
                 if self.playerBudget[name] > 0:
                     bet = round(self.playerBudget[name]/10)
                     bet += 0.5*bet*max(self.trueCount,0)
                     bet = min([self.playerBudget[name], bet]) #one directional
                     self.playerBets[name] = int(bet)
-                    print(f"{name} bets {int(bet)}")
+                    print(f"{name} bets {int(bet)} poptarts")
                     time.sleep(1.5)
-                    print("\n"*10)
+                    print("\n"*20)
 
     def printPlayerHands(self):
         """
@@ -133,13 +149,13 @@ class Doublejack():
                 self.playerStatus[name] = 3 if self.countHand(self.playerHands[name]) == self.target else 2
                 print(f"{name} stands with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                 time.sleep(1.5)
-                print("\n"*10)
+                print("\n"*20)
                 break
 
             if self.countHand(self.playerHands[name]) > self.target:
                 print(f"{name} busts with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}!")
                 time.sleep(1.5)
-                print("\n"*10)
+                print("\n"*20)
                 break
     
     def deckCapacity(self):
@@ -148,10 +164,10 @@ class Doublejack():
         """
         if len(self.shoe) < 78:
             self.shoe = deck*6
-            print("\n"*10)
+            print("\n"*20)
             print("Reshuffling Deck")
             time.sleep(2.5)
-            print("\n"*10)
+            print("\n"*20)
             self.runningCount = 0
             self.trueCount = 0
     
@@ -161,12 +177,13 @@ class Doublejack():
         """
         if self.gameName == "Doublejack":
             return True
+        print("\n")
         choice = input("Do you want to start a new round? [Y/N]")
         if choice.upper() == "Y":
-            print("\n"*10)
+            print("\n"*20)
             return True
         else:
-            print("\n"*10)
+            print("\n"*20)
             return False
     
     def payout(self):
@@ -179,20 +196,20 @@ class Doublejack():
             if self.playerStatus[name] == 3: #blackjack
                 if self.countHand(self.dealerHand) != self.target: #player wins
                     self.playerBets[name] = int(self.playerBets[name] * 1.5 * self.payoutMultiplier)
-                    print(f"{name} hits a {self.gameName}, winning {self.playerBets[name]}!")
+                    print(f"{name} hits a {self.gameName}, winning {self.playerBets[name]} poptarts!")
                 else: #both player & dealer have blackjack
                     self.playerBets[name] = 0
-                    print(f"Both {name} and dealer has a {self.gameName}, resulting in a tie.")
+                    print(f"Both {name} and dealer have a {self.gameName}, resulting in a tie.")
             elif self.playerStatus[name] == 2:
                 if self.countHand(self.dealerHand) > self.target:
                     self.playerBets[name] *= 1 * self.payoutMultiplier
-                    print(f"Dealer busts! {name} wins {self.playerBets[name]}")
+                    print(f"Dealer busts! {name} wins {self.playerBets[name]} poptarts!")
                 elif self.countHand(self.playerHands[name]) > self.countHand(self.dealerHand): #player wins
                     self.playerBets[name] *= 1 * self.payoutMultiplier
-                    print(f"{name} wins with a count of {self.countHand(self.playerHands[name])}, winning {self.playerBets[name]}.")
+                    print(f"{name} wins with a count of {self.countHand(self.playerHands[name])}, winning {self.playerBets[name]} poptarts!")
                 elif self.countHand(self.playerHands[name]) < self.countHand(self.dealerHand): #player loses
                     self.playerBets[name] *= -1
-                    print(f"{name} loses with a count of {self.countHand(self.playerHands[name])}, losing {self.playerBets[name]}.")
+                    print(f"{name} loses with a count of {self.countHand(self.playerHands[name])}, losing {abs(self.playerBets[name])} poptarts.")
                 else: #tie
                     self.playerBets[name] = 0
                     print(f"{name} ties with the dealer!")
@@ -202,7 +219,7 @@ class Doublejack():
                     self.playerBets[name] = 0
                 else:
                     self.playerBets[name] *= -1
-                    print(f"{name} loses with a count of {self.countHand(self.playerHands[name])}, losing {self.playerBets[name]}.")
+                    print(f"{name} loses with a count of {self.countHand(self.playerHands[name])}, losing {abs(self.playerBets[name])} poptarts.")
 
             self.playerBudget[name] += self.playerBets[name]
             self.playerBets[name] = 0
@@ -216,14 +233,14 @@ class Doublejack():
     
     def gameSummary(self):
         """
-        Prints the end-of-game statistics for each player, which tells the player how much money
+        Prints the end-of-game statistics for each player, which tells the player how much poptarts
         they won/lost and their final budget.
         """
         for name in self.playerNames:
             if self.playerBudget[name] - self.staticPlayerBudget[name] >= 0:
-                print(f"{name} wins {self.playerBudget[name] - self.staticPlayerBudget[name]}, ending with {self.playerBudget[name]}")
+                print(f"{name} wins {self.playerBudget[name] - self.staticPlayerBudget[name]} poptarts, ending with {self.playerBudget[name]} poptarts!")
             else:
-                print(f"{name} loses {self.staticPlayerBudget[name] - self.playerBudget[name]}, ending with {self.playerBudget[name]}")
+                print(f"{name} loses {self.staticPlayerBudget[name] - self.playerBudget[name]} poptarts, ending with {self.playerBudget[name]} poptarts.")
 
     def checkDoublejack(self):
         """
@@ -233,6 +250,7 @@ class Doublejack():
         if self.countHand(self.dealerHand) == 21:
             choice = input("Dealer hits 21. Giving you the option to play Doublejack. [Y/N]")
             if choice.upper() == "Y":
+                print("\n")
                 self.gameName = "Doublejack"
                 self.target = 42
                 self.payoutMultiplier = 2
@@ -270,7 +288,7 @@ class Doublejack():
             if self.countHand(self.playerHands[name]) > self.target:
                 print(f"{name} busts with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                 time.sleep(2.5)
-                print("\n"*10)
+                print("\n"*20)
                 break
             elif self.countHand(self.playerHands[name]) <= self.target-10:
                 self.playerHands[name] += [self.randomCard()]
@@ -279,13 +297,13 @@ class Doublejack():
             elif self.countHand(self.playerHands[name]) >= self.target-4:
                 print(f"{name} stands with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                 time.sleep(2.5)
-                print("\n"*10)
+                print("\n"*20)
                 break
             else:
                 if self.countHand(self.dealerHand[:-1]) <= self.target-15: #target-4-1-10
                     print(f"{name} stands with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
                     time.sleep(2.5)
-                    print("\n"*10)
+                    print("\n"*20)
                     break
                 else:
                     self.playerHands[name] += [self.randomCard()]
@@ -320,17 +338,27 @@ def startGame():
     Starts the game of doublejack and receiving player input on gamemode, name, budget, 
     # of players (for multiplayer), and # of NPC (for singleplayer)
     """
-    print("\n"*10)
-    gamemode = input("Select gamemode: Singleplayer vs Multiplayer [S/M]")
+
+    print("\n" + "-"*50)
+    print("  Welcome to DOUBLEJACK")
+    print("  Beat the dealer at 21 — and if the dealer hits 21,")
+    print("  ride the bonus round up to 42.")
+    print("-"*50 + "\n")
+
+    print("Game modes:")
+    print("  [S] Singleplayer — you vs. AIs")
+    print("  [M] Multiplayer  — humans only")
+    gamemode = input("Select gamemode [S/M]:")
+    print("\n")
     playerData = []
     if gamemode.upper() == "S":
         #playerData
         name = input("Enter your name: ")
-        budget = int(input("Enter your budget: "))
+        budget = int(input("Enter the number of poptarts that you have: "))
         playerData += [[name, budget,1]]
         
         #AIData
-        numPlayers = int(input("Enter the number of NPCs [Min1/Max5]:"))
+        numPlayers = int(input("Enter the number of NPCs [1-5]:"))
         for i in range(numPlayers):
             AIName = random.choice(poker_players)
             poker_players.remove(AIName)
@@ -340,10 +368,11 @@ def startGame():
         playerCount = int(input("Enter the number of players: "))
         for i in range(1,playerCount+1):
             name = input(f"Enter player{i}'s name: ")
-            budget = int(input(f"Enter player {i}'s budget: "))
+            budget = int(input(f"Enter the number of poptarts player{i} has: "))
             playerData += [[name, budget,1]]
             time.sleep(2.5)
-            print("\n"*10)
+            print("\n")
+        print("\n")
     
     table = Doublejack(playerData)
     table.hostGame()
