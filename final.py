@@ -30,12 +30,19 @@ class Doublejack():
         self.trueCount = 0
 
     def randomCard(self):
+        """
+        Picks a random card from the shoe and remove that card from the shoe
+        """
         card = random.choice(self.shoe)
         self.shoe.remove(card)
         self.runningCount += counting_values[card]
         return card
     
     def countHand(self, hand):
+        """
+        Takes a blackjack hand as input and returns the total count of the hand. Aces are initially
+        handled as 11 then each reduced to 1 until the hand drops below the target (i.e. 21 or 42)
+        """
         total = sum([card_values[card] for card in hand])
 
         #Ace exception
@@ -46,6 +53,10 @@ class Doublejack():
         return total
     
     def dealCards(self):
+        """
+        Deals two hands to the player and dealer. Player budget must be above 0. Deals 2 additional card
+        to dealer during doublejack.
+        """
         if self.gameName == "Doublejack":
             self.dealerHand += [self.randomCard() for i in range(2)]
             return
@@ -54,7 +65,12 @@ class Doublejack():
         for name in self.playerNames:
                 if self.playerBudget[name] > 0:
                     self.playerHands[name] = [self.randomCard() for i in range(2)]
+    
     def collectBets(self):
+        """
+        Collects a bet below their budget if the player if human. If the player is AI, it sets
+        the base bet at 1/10th of the AI's budget and adjust the bet according to the True count.
+        """
         for name in self.playerNames:
             if self.playerType[name] == 1:
                 if self.playerBudget[name] > 0:
@@ -69,18 +85,24 @@ class Doublejack():
                 if self.playerBudget[name] > 0:
                     bet = round(self.playerBudget[name]/10)
                     bet += 0.5*bet*max(self.trueCount,0)
-                    bet = min([self.playerBudget[name], bet]) #one directional, for now at least...
+                    bet = min([self.playerBudget[name], bet]) #one directional
                     self.playerBets[name] = int(bet)
                     print(f"{name} bets {int(bet)}")
                     time.sleep(1.5)
                     print("\n"*10)
 
     def printPlayerHands(self):
+        """
+        print the player's hands
+        """
         for name in self.playerNames:
             print(f"{name} has {self.playerHands[name]}")
         print("-"*40)
     
     def printDealerHand(self):
+        """
+        print the dealer's hands
+        """
         if self.gameName == "Blackjack":
             print(f"Dealer has {[self.dealerHand[0],"🂠"]}")
         else:
@@ -88,6 +110,9 @@ class Doublejack():
         print("-"*40)
 
     def checkLimit(self,name): #0 = bust, 1 = playing, 2 = stand, 3 = blackjack/doublejack
+        """
+        Takes as input players name and assigns a status according to their current hand count
+        """
         if self.countHand(self.playerHands[name]) == self.target:
             self.playerStatus[name] = 3
         elif self.countHand(self.playerHands[name]) > self.target:
@@ -96,6 +121,9 @@ class Doublejack():
             self.playerStatus[name] = 2
 
     def receiveInput(self,name):
+        """
+        Takes as input player name and receives the person's input on whether they wants to hit or stand
+        """
         while True:
             choice = input(f"{name}'s move. Do you wish to HIT or STAND? Your cards are {self.playerHands[name]}, giving you a total count of {self.countHand(self.playerHands[name])} | [H/S]")
             if choice.upper() == "H":
@@ -115,6 +143,9 @@ class Doublejack():
                 break
     
     def deckCapacity(self):
+        """
+        Resets the shoe if the shoe if over 75% of the cards in the shoe have been played
+        """
         if len(self.shoe) < 78:
             self.shoe = deck*6
             print("\n"*10)
@@ -125,6 +156,9 @@ class Doublejack():
             self.trueCount = 0
     
     def continueGame(self):
+        """
+        Recieves player input on whether they want to continue playing the game
+        """
         if self.gameName == "Doublejack":
             return True
         choice = input("Do you want to start a new round? [Y/N]")
@@ -136,6 +170,11 @@ class Doublejack():
             return False
     
     def payout(self):
+        """
+        Determines the payout for the player by comparing the count of the player's hand and dealer's hand.
+        If the gamemode is Doublejack, all payout is doubled. Resets player's bets and status and adds/subtracts
+        the payout amount of the player's budget
+        """
         for name in self.playerNames:
             if self.playerStatus[name] == 3: #blackjack
                 if self.countHand(self.dealerHand) != self.target: #player wins
@@ -176,6 +215,10 @@ class Doublejack():
         print("-"*20)
     
     def gameSummary(self):
+        """
+        Prints the end-of-game statistics for each player, which tells the player how much money
+        they won/lost and their final budget.
+        """
         for name in self.playerNames:
             if self.playerBudget[name] - self.staticPlayerBudget[name] >= 0:
                 print(f"{name} wins {self.playerBudget[name] - self.staticPlayerBudget[name]}, ending with {self.playerBudget[name]}")
@@ -183,6 +226,10 @@ class Doublejack():
                 print(f"{name} loses {self.staticPlayerBudget[name] - self.playerBudget[name]}, ending with {self.playerBudget[name]}")
 
     def checkDoublejack(self):
+        """
+        Checks if the dealer has 21. If dealer has 21, activate Doublejack variant by doubling payout multipler
+        and increasing target threshold to 42.
+        """
         if self.countHand(self.dealerHand) == 21:
             choice = input("Dealer hits 21. Giving you the option to play Doublejack. [Y/N]")
             if choice.upper() == "Y":
@@ -191,6 +238,11 @@ class Doublejack():
                 self.payoutMultiplier = 2
     
     def dealerTurn(self):
+        """
+        Determines whether dealer should hit/stand according to the standard rules of blackjack and Doublejack.
+        Dealer stands on 17 or above for blackjack and 38 or above for doublejack. Any hand below that the dealer
+        must hit.
+        """
         print(f"Dealer shows {self.dealerHand}")
         while True:
             if self.countHand(self.dealerHand) >= self.target-4:
@@ -210,6 +262,10 @@ class Doublejack():
         self.trueCount = self.runningCount/(len(self.shoe)/52)
 
     def AITurn(self, name):
+        """
+        Determines the move that the AI will make according to a simplified version of "standard blackjack strategy chart".
+        Extended standard strategy to doublejack by applying strategy logic to 42 threshold.
+        """
         while True:
             if self.countHand(self.playerHands[name]) > self.target:
                 print(f"{name} busts with {self.playerHands[name]} — total count of {self.countHand(self.playerHands[name])}")
@@ -237,6 +293,9 @@ class Doublejack():
                     time.sleep(1)
 
     def hostGame(self):
+        """
+        Hosts the game of doublejack
+        """
         while self.continueGame():
             self.deckCapacity()
             self.collectBets()
@@ -257,6 +316,10 @@ class Doublejack():
         return self.gameSummary()
 
 def startGame():
+    """
+    Starts the game of doublejack and receiving player input on gamemode, name, budget, 
+    # of players (for multiplayer), and # of NPC (for singleplayer)
+    """
     print("\n"*10)
     gamemode = input("Select gamemode: Singleplayer vs Multiplayer [S/M]")
     playerData = []
